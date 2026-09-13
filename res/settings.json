@@ -1,0 +1,120 @@
+[
+	{
+		"type": "group",
+		"title": "賬號",
+		"items": [
+			{
+				"type": "login",
+				"key": "login",
+				"title": "登錄",
+				"logoutTitle": "登出",
+				"method": "basic",
+				"notification": "login",
+				"refreshes": [
+					"listings",
+					"content"
+				]
+			}
+		]
+	},
+	{
+		"type": "group",
+		"title": "簡介按鈕",
+		"items": [
+			{
+				"type": "switch",
+				"key": "favButtons.inDetail",
+				"title": "在漫畫簡介頂部顯示收藏按鈕",
+				"default": true,
+				"refreshes": [
+					"content"
+				]
+			}
+		]
+	},
+	{
+		"type": "group",
+		"title": "收藏操作",
+		"footer": "App 内收藏只需上方「賬號」登錄一次（會話過期自動續期，已驗證可用）。網頁備用：點「網頁收藏（App 內網頁）」在 Aidoku 內打開網頁書架，未登入時在網頁裡登入一次即可（會話由網站控制，過期後在網頁裡再登入一次；不影響 App 內按鈕）。漫画详情页的浏览器按钮走 Safari，其登入狀態無法由本源控制。按鈕執行後請退出設置頁重新進入查看結果；日誌在 設置→高級→顯示日誌。",
+		"items": [
+			{
+				"type": "text",
+				"key": "favInput",
+				"title": "漫畫鏈接或 ID",
+				"placeholder": "/comic/xxxx"
+			},
+			{
+				"type": "button",
+				"key": "favAdd",
+				"title": "加入書架",
+				"notification": "favAdd",
+				"refreshes": [
+					"listings",
+					"content"
+				]
+			},
+			{
+				"type": "button",
+				"key": "favRemove",
+				"title": "取消收藏",
+				"notification": "favRemove",
+				"destructive": true,
+				"confirmTitle": "確認要從網站書架移除該漫畫嗎？",
+				"refreshes": [
+					"listings",
+					"content"
+				]
+			},
+			{
+				"type": "login",
+				"key": "websession",
+				"title": "網頁收藏（App 內網頁）",
+				"logoutTitle": "重新打開網頁收藏",
+				"method": "web",
+				"url": "https://www.copy3000.com/web/login?url=person/home",
+				"clearCookiesOnLogOut": false,
+				"notification": "websession",
+				"refreshes": [
+					"listings",
+					"content"
+				]
+			}
+		]
+	},
+	{
+		"type": "group",
+		"title": "圖片",
+		"items": [
+			{
+				"type": "select",
+				"key": "image.quality",
+				"title": "畫質",
+				"titles": [
+					"低",
+					"中",
+					"高"
+				],
+				"values": [
+					"c800x",
+					"c1200x",
+					"c1500x"
+				],
+				"default": "c1500x"
+			},
+			{
+				"type": "select",
+				"key": "image.format",
+				"title": "格式",
+				"titles": [
+					"高效率",
+					"最相容"
+				],
+				"values": [
+					"webp",
+					"jpg"
+				],
+				"default": "webp"
+			}
+		]
+	}
+]
