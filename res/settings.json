@@ -24,7 +24,7 @@
 			{
 				"type": "switch",
 				"key": "favButtons.inDetail",
-				"title": "在漫畫簡介頂部顯示收藏按鈕",
+				"title": "顯示詳情頁收藏按鈕",
 				"default": true,
 				"refreshes": [
 					"content"
@@ -35,13 +35,13 @@
 	{
 		"type": "group",
 		"title": "收藏操作",
-		"footer": "App 内收藏只需上方「賬號」登錄一次（會話過期自動續期，已驗證可用）。網頁備用：點「網頁收藏（App 內網頁）」在 Aidoku 內打開網頁書架，未登入時在網頁裡登入一次即可（會話由網站控制，過期後在網頁裡再登入一次；不影響 App 內按鈕）。漫画详情页的浏览器按钮走 Safari，其登入狀態無法由本源控制。按鈕執行後請退出設置頁重新進入查看結果；日誌在 設置→高級→顯示日誌。",
+		"footer": "先在上方登入，再輸入漫畫鏈接或 ID。操作結果會顯示在輸入框；「網頁收藏」使用獨立網頁登入。",
 		"items": [
 			{
 				"type": "text",
 				"key": "favInput",
 				"title": "漫畫鏈接或 ID",
-				"placeholder": "/comic/xxxx"
+				"placeholder": "例如 /comic/xxxx"
 			},
 			{
 				"type": "button",

@@ -168,19 +168,18 @@ pub fn parse_path_word(input: &str) -> Result<String> {
 	let input = input.trim();
 	let path_word = if let Some((scheme, rest)) = input.split_once("://") {
 		if !matches!(scheme, "http" | "https") {
-			bail!("無法識別的輸入：請粘貼 CopyManga 漫畫鏈接或 ID");
+			bail!("請輸入漫畫鏈接或 ID");
 		}
 		let (host, path) = rest.split_once('/').unwrap_or((rest, ""));
 		if !is_copymanga_host(host) {
-			bail!("無法識別的輸入：鏈接不是受支持的 CopyManga 域名");
+			bail!("僅支持 CopyManga 漫畫鏈接");
 		}
-		path_word_from_path(path)
-			.ok_or_else(|| error!("無法識別的輸入：請粘貼漫畫鏈接或 ID（例如 /comic/xxxx）"))?
+		path_word_from_path(path).ok_or_else(|| error!("請輸入漫畫鏈接或 ID"))?
 	} else {
 		input
 	};
 	if !is_path_word(path_word) {
-		bail!("無法識別的輸入：請粘貼漫畫鏈接或 ID（例如 /comic/xxxx）");
+		bail!("請輸入漫畫鏈接或 ID");
 	}
 	Ok(path_word.into())
 }
