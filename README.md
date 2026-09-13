@@ -1,16 +1,16 @@
-# CopyManga Plus
+# 拷貝漫畫 Plus
 
-An unofficial [Aidoku](https://aidoku.app/) Source for CopyManga, with optional account-backed favorites. It is not affiliated with Aidoku or CopyManga.
+这是一个非官方的 [Aidoku](https://aidoku.app/) CopyManga 图源，提供账户登录和网站收藏功能。项目与 Aidoku、CopyManga 均无关联。
 
-## Status
+## 项目状态
 
-This repository is an independent development and release line. Its Source ID is `zh.copymanga.plus`; it is intentionally separate from the community source while the account-favorites work is validated.
+这是独立维护的发布线，Source ID 为 `zh.copymanga.plus`。在账户收藏功能完成验证期间，它与社区原版图源分开发布。
 
-Do not treat a local `package.aix` as a release artifact. Build a package from the checked-out source and validate it before distribution.
+本地的 `package.aix` 只是构建产物，不应直接作为正式发布依据。请从当前源码重新打包并验证后再分发。
 
-## Development
+## 开发与验证
 
-Requirements: Rust with the `wasm32-unknown-unknown` target and the Aidoku CLI.
+需要安装 Rust、`wasm32-unknown-unknown` 编译目标和 Aidoku CLI。
 
 ```sh
 cargo fmt --check
@@ -20,12 +20,12 @@ aidoku package
 aidoku verify package.aix
 ```
 
-Before public release, test anonymous reading, login/logout/relogin, favorite reads and writes, expired-token recovery, and detail-page deep links on an Aidoku device.
+公开发布前，应在 Aidoku 设备上验证匿名阅读、登录/登出/重新登录、收藏读取与写入、token 过期续期和详情页 deep link。
 
-## Community contribution
+## 向 Aidoku Community 贡献
 
-An Aidoku Community pull request must target the existing upstream CopyManga source and keep its upstream Source ID. It must not submit this independent `zh.copymanga.plus` Source as a parallel duplicate. Follow the community contribution guide, use a focused PR and Conventional Commit title, and include device-test evidence.
+若未来向 Aidoku Community 提交改动，应基于社区现有的 CopyManga 图源，并保留其原有 Source ID；不要将独立的 `zh.copymanga.plus` 作为平行重复图源提交。请使用聚焦的 Pull Request、Conventional Commit 标题，并附上真机测试结果。
 
-## License
+## 许可证
 
-Licensed under [MIT](LICENSE-MIT). The original Aidoku Community source is dual-licensed; an eventual upstream contribution is governed by that repository's contribution terms.
+本项目使用 [MIT 许可证](LICENSE-MIT)。原 Aidoku Community 图源采用双许可证；未来向社区提交的代码仍受社区仓库贡献条款约束。
