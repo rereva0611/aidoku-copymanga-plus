@@ -1,10 +1,10 @@
-# CopyManga 收藏 Source
+# CopyManga Plus
 
 An unofficial [Aidoku](https://aidoku.app/) Source for CopyManga, with optional account-backed favorites. It is not affiliated with Aidoku or CopyManga.
 
 ## Status
 
-This repository is an independent development and release line. The current Source ID is `zh.copymanga.v27`; it is intentionally separate from the community source while the account-favorites work is validated.
+This repository is an independent development and release line. Its Source ID is `zh.copymanga.plus`; it is intentionally separate from the community source while the account-favorites work is validated.
 
 Do not treat a local `package.aix` as a release artifact. Build a package from the checked-out source and validate it before distribution.
 
@@ -24,7 +24,7 @@ Before public release, test anonymous reading, login/logout/relogin, favorite re
 
 ## Community contribution
 
-An Aidoku Community pull request must target the existing upstream CopyManga source and keep its upstream Source ID. It must not submit this experimental `zh.copymanga.v27` Source as a parallel duplicate. Follow the community contribution guide, use a focused PR and Conventional Commit title, and include device-test evidence.
+An Aidoku Community pull request must target the existing upstream CopyManga source and keep its upstream Source ID. It must not submit this independent `zh.copymanga.plus` Source as a parallel duplicate. Follow the community contribution guide, use a focused PR and Conventional Commit title, and include device-test evidence.
 
 ## License
 
