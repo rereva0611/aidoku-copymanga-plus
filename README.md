@@ -16,6 +16,8 @@
 
 发布后，请从本仓库的 Releases 页面下载最新 `package.aix`，并导入 Aidoku。
 
+如果你还不熟悉 Aidoku 的安装、添加图源或导入 `.aix` 文件，可以先查看[中文使用教程](https://github.com/rereva0611/aidoku-guide-zh)。
+
 ## 使用
 
 阅读漫画不需要登录。使用收藏功能时，请先在图源设置中登录，然后在漫画详情页加入或取消收藏。“我的收藏”可以从首页或 Explore 页面打开。
