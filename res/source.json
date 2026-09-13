@@ -27,7 +27,7 @@
 	],
 	"config": {
 		"allowsBaseUrlSelect": true,
-		"hidesFiltersWhileSearching": true,
+		"hidesFiltersWhileSearching": false,
 		"supportsAuthorSearch": true,
 		"supportsTagSearch": true
 	}
