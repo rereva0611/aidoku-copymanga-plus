@@ -343,9 +343,15 @@ fn favorite_with_state(path_word: &str, add: bool) -> Result<String> {
 	})
 }
 
-/// 簡介頂部注入收藏按鈕（Markdown 鏈接，點擊經 deep link 路由回 source 執行）。
+/// 簡介頂部注入收藏按鈕與評論鏈接（Markdown，點擊經 deep link 路由回 source 執行）。
+/// 評論鏈接指向網站 H5 评论区（/h5/commentList?comicId={uuid}），
+/// 本源 deep link 不識別該路徑 → App 自動落到內建瀏覽器打開。
 /// 開關關閉或未登入時返回 None（保持原簡介）。
-pub fn decorate_description(path_word: &str, description: &str) -> Option<String> {
+pub fn decorate_description(
+	path_word: &str,
+	uuid: Option<&str>,
+	description: &str,
+) -> Option<String> {
 	let enabled = defaults_get::<bool>("favButtons.inDetail").unwrap_or(true);
 	if !enabled || !crate::auth::is_logged_in() {
 		return None;
@@ -374,11 +380,18 @@ pub fn decorate_description(path_word: &str, description: &str) -> Option<String
 			None => false,
 		},
 	};
-	if collected {
-		lines.push(format!("[✖ 取消收藏]({base}/__fav/remove/{path_word})"));
+	let button = if collected {
+		format!("[✖ 取消收藏]({base}/__fav/remove/{path_word})")
 	} else {
-		lines.push(format!("[➕ 加入書架]({base}/__fav/add/{path_word})"));
-	}
+		format!("[➕ 加入書架]({base}/__fav/add/{path_word})")
+	};
+	lines.push(match uuid.filter(|u| !u.is_empty()) {
+		// 評論頁走真實主域（无需路由 trick：本源 deep link 不識別該路徑，自然落到內建瀏覽器）
+		Some(uuid) => {
+			format!("{button} · [💬 評論](https://www.copy3000.com/h5/commentList?comicId={uuid})")
+		}
+		None => button,
+	});
 	let mut out = lines.join("\n\n");
 	if !description.is_empty() {
 		out.push_str("\n\n———\n\n");

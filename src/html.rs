@@ -141,6 +141,26 @@ impl KeyPage for Document {
 	}
 }
 
+/// 详情页收藏按钮上的漫画 UUID（`onclick="collect('…')"`），
+/// 供「查看评论」链接使用（网站评论区以 UUID 为键）。
+pub trait CollectButtonPage {
+	fn collect_uuid(&self) -> Option<String>;
+}
+
+impl CollectButtonPage for Document {
+	fn collect_uuid(&self) -> Option<String> {
+		let onclick = self
+			.try_select("[onclick*='collect']")
+			.ok()?
+			.find_map(|element| {
+				let attr = element.attr("onclick")?;
+				attr.contains("collect(").then_some(attr)
+			})?;
+		let uuid = onclick.split("collect('").nth(1)?.split('\'').next()?;
+		(!uuid.is_empty()).then_some(uuid.into())
+	}
+}
+
 pub trait ChapterPage {
 	fn pages(&self) -> Result<Vec<Page>>;
 	fn dnt(&self) -> Option<String>;
