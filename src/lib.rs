@@ -10,8 +10,8 @@ mod tests;
 
 use aidoku::{
 	BasicLoginHandler, Chapter, DeepLinkHandler, DeepLinkResult, DynamicFilters, Filter,
-	FilterValue, HashMap, Listing, ListingProvider, Manga, MangaPageResult, NotificationHandler,
-	Page, Result, Source, WebLoginHandler,
+	FilterValue, Listing, ListingProvider, Manga, MangaPageResult, NotificationHandler, Page,
+	Result, Source,
 	alloc::{String, Vec},
 	bail, error,
 	imports::std::send_partial_result,
@@ -185,62 +185,17 @@ impl BasicLoginHandler for Copymanga {
 	}
 }
 
-impl WebLoginHandler for Copymanga {
-	fn handle_web_login(&self, key: String, cookies: HashMap<String, String>) -> Result<bool> {
-		if key != "websession" {
-			return Ok(false);
-		}
-		// 捕获站点 token cookie（供 App 内写请求回退用）；
-		// 恒返回 false 让 WebView 保持打开——此入口定位是「App 内网页书架浏览」，
-		// 会话由用户在网页里自行登录/续期，与账号登录（主路）无关。
-		if let Some(token) = cookies
-			.get("token")
-			.map(|t| t.trim())
-			.filter(|t| !t.is_empty())
-		{
-			auth::set_web_token(token);
-			println!("copymanga: web session token captured");
-		}
-		Ok(false)
-	}
-}
-
 impl NotificationHandler for Copymanga {
 	fn handle_notification(&self, notification: String) {
-		match notification.as_str() {
-			"login" => {
-				// 登录时 App 先调 handle_basic_login（置 justLoggedIn），随后才发通知；
-				// 登出时没有 handle_basic_login，直接清掉本地 token。
-				if auth::take_just_logged_in() {
-					auth::clear_just_logged_in();
-				} else {
-					auth::clear_auth();
-				}
+		if notification == "login" {
+			// 登录时 App 先调 handle_basic_login（置 justLoggedIn），随后才发通知；
+			// 登出时没有 handle_basic_login，直接清掉本地 token。
+			if auth::take_just_logged_in() {
+				auth::clear_just_logged_in();
+			} else {
+				auth::clear_auth();
 			}
-			action @ ("favAdd" | "favRemove") => {
-				// 设置页「收藏操作」按钮：结果写回输入框供用户查看，并在日志留档
-				let add = action == "favAdd";
-				match favorites::favorite_from_input(add) {
-					Ok(status) => self.set_fav_input(&status),
-					Err(err) => {
-						let text = favorites::error_text(&err);
-						println!("copymanga: favorite action failed ({text})");
-						self.set_fav_input(&text);
-					}
-				}
-			}
-			_ => {}
 		}
-	}
-}
-
-impl Copymanga {
-	fn set_fav_input(&self, value: &str) {
-		use aidoku::{
-			alloc::String as _String,
-			imports::defaults::{DefaultValue, defaults_set},
-		};
-		defaults_set("favInput", DefaultValue::String(_String::from(value)));
 	}
 }
 
@@ -250,7 +205,6 @@ register_source!(
 	DynamicFilters,
 	ListingProvider,
 	BasicLoginHandler,
-	WebLoginHandler,
 	NotificationHandler,
 	Home
 );

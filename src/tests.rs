@@ -86,46 +86,6 @@ fn unknown_listing_errors() {
 	);
 }
 
-/// 纯函数：收藏操作输入解析（完整链接/h5链接/章节链接/裸 ID）。
-#[aidoku_test::aidoku_test]
-fn parse_path_word_inputs() {
-	assert_eq!(
-		crate::favorites::parse_path_word("https://www.copy3000.com/comic/xiedemanjianghu")
-			.unwrap(),
-		"xiedemanjianghu"
-	);
-	assert_eq!(
-		crate::favorites::parse_path_word(
-			"https://www.copy3000.com/comic/xingqiyidefengmanxlz?utm=1"
-		)
-		.unwrap(),
-		"xingqiyidefengmanxlz"
-	);
-	assert_eq!(
-		crate::favorites::parse_path_word("https://www.copy3000.com/comic/abc/chapter/123")
-			.unwrap(),
-		"abc"
-	);
-	assert_eq!(
-		crate::favorites::parse_path_word("wokaishizuoavnanyoule").unwrap(),
-		"wokaishizuoavnanyoule"
-	);
-	assert_eq!(
-		crate::favorites::parse_path_word("http://2026copy.com/h5/details/comic/abc_123-xyz#read")
-			.unwrap(),
-		"abc_123-xyz"
-	);
-	assert!(crate::favorites::parse_path_word("").is_err());
-	assert!(crate::favorites::parse_path_word("https://www.copy3000.com/").is_err());
-	assert!(crate::favorites::parse_path_word("https://evilcopymanga.com/comic/abc").is_err());
-	assert!(crate::favorites::parse_path_word("https://copymanga.evil.com/comic/abc").is_err());
-	assert!(crate::favorites::parse_path_word("javascript:alert(1)").is_err());
-	assert!(crate::favorites::parse_path_word("file:///comic/abc").is_err());
-	// 状态回显文本必须被拒绝（v29 前曾把回显当输入解析出费解错误）
-	assert!(crate::favorites::parse_path_word("已加入書架: jtyhjissmdpj").is_err());
-	assert!(crate::favorites::parse_path_word("ℹ️ 已在書架（無需重複添加）").is_err());
-}
-
 /// 设置页和详情页应使用同一规则，避免重复的收藏写操作。
 #[aidoku_test::aidoku_test]
 fn favorite_operation_needed_inputs() {

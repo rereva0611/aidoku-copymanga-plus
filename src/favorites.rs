@@ -162,56 +162,11 @@ pub(crate) fn merge_collect_pages(
 	Ok(free)
 }
 
-/// 设置页「收藏操作」输入的解析：接受完整链接（/comic/xxx、/h5/details/comic/xxx、
-/// 章节链接截断）或裸 path_word。
-pub fn parse_path_word(input: &str) -> Result<String> {
-	let input = input.trim();
-	let path_word = if let Some((scheme, rest)) = input.split_once("://") {
-		if !matches!(scheme, "http" | "https") {
-			bail!("請輸入漫畫鏈接或 ID");
-		}
-		let (host, path) = rest.split_once('/').unwrap_or((rest, ""));
-		if !is_copymanga_host(host) {
-			bail!("僅支持 CopyManga 漫畫鏈接");
-		}
-		path_word_from_path(path).ok_or_else(|| error!("請輸入漫畫鏈接或 ID"))?
-	} else {
-		input
-	};
-	if !is_path_word(path_word) {
-		bail!("請輸入漫畫鏈接或 ID");
+fn error_text(err: &AidokuError) -> String {
+	match err {
+		AidokuError::Message(message) => message.clone(),
+		other => format!("{other:?}"),
 	}
-	Ok(path_word.into())
-}
-
-fn is_copymanga_host(host: &str) -> bool {
-	[
-		"www.copy3000.com",
-		"copy3000.com",
-		"www.2026copy.com",
-		"2026copy.com",
-		"www.2025copy.com",
-		"2025copy.com",
-		"www.copy20.com",
-		"copy20.com",
-	]
-	.into_iter()
-	.any(|allowed| host.eq_ignore_ascii_case(allowed))
-}
-
-fn path_word_from_path(path: &str) -> Option<&str> {
-	let path = path.split(['?', '#']).next()?.trim_end_matches('/');
-	path.strip_prefix("comic/")
-		.or_else(|| path.strip_prefix("h5/details/comic/"))?
-		.split('/')
-		.next()
-}
-
-fn is_path_word(value: &str) -> bool {
-	!value.is_empty()
-		&& value
-			.chars()
-			.all(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
 }
 
 /// 从详情页 HTML 提取收藏按钮上的漫画 UUID（onclick="collect('...')"）。
@@ -230,13 +185,6 @@ pub fn resolve_comic_uuid(path_word: &str) -> Result<String> {
 		bail!("詳情頁收藏標識為空");
 	}
 	Ok(uuid.into())
-}
-
-pub(crate) fn error_text(err: &AidokuError) -> String {
-	match err {
-		AidokuError::Message(m) => m.clone(),
-		other => format!("{other:?}"),
-	}
 }
 
 // 收藏状态统一存单键 JSON map（登出时整键清除，避免换号串状态）：
@@ -439,7 +387,7 @@ pub fn decorate_description(path_word: &str, description: &str) -> Option<String
 	Some(out)
 }
 
-/// 收藏动作的共享核心：设置页按钮与简介按钮都走这里（同一条已验证路径）。
+/// 收藏动作的详情页核心路径。
 fn favorite_core(path_word: &str, add: bool) -> Result<String> {
 	println!("copymanga: parsed path_word={path_word}");
 	let uuid = resolve_comic_uuid(path_word)?;
@@ -458,20 +406,8 @@ fn favorite_core(path_word: &str, add: bool) -> Result<String> {
 	Ok(status)
 }
 
-/// 设置页「加入書架 / 取消收藏」按钮的实际执行入口。
-/// 返回给用户看的状态文案（同时写入 favInput 显示、打进日志）。
-pub fn favorite_from_input(add: bool) -> Result<String> {
-	println!("copymanga: favorite action start (add={add})");
-	let input = defaults_get::<String>("favInput").unwrap_or_default();
-	if input.trim().is_empty() {
-		bail!("請先在上方輸入漫畫鏈接或 ID");
-	}
-	let path_word = parse_path_word(&input)?;
-	favorite_with_state(&path_word, add)
-}
-
 /// 写操作端点（网站收藏/取消收藏）。Aidoku Source API 没有漫画页自定义操作钩子，
-/// 因此由设置页「收藏操作」按钮触发（见 settings.json / NotificationHandler）。
+/// 因此由详情页 Markdown deep link 触发。
 ///
 /// v21 失败原因：www 主域对部分 /api 路径返回 HTTP 200 的「服務器升級中」HTML 拦截页
 /// （评论接口同病），旧实现只检查 401，把拦截页当成功。现在：
@@ -509,9 +445,8 @@ fn collect_hosts() -> Result<Vec<String>> {
 }
 
 fn set_collect_once(url: &str, body: &str) -> Result<()> {
-	// 单登录设计：只用 API 登录的 token（Authorization 头 + Cookie 双通道，对齐网页端
-	// withCredentials 行为）；401 时用 App 保存的账密静默重登续期，无需任何网页登录。
-	// 网页会话 token 仅作为 v24 升级用户的自动回退。
+	// 单登录设计：使用 API 登录 token 的 Authorization 头和 Cookie 双通道；401 时用
+	// App 保存的账密静默重登续期。
 	let send = |url: String, token: &str| -> Result<Response> {
 		Ok(Request::post(&url)?
 			.header(
@@ -532,13 +467,6 @@ fn set_collect_once(url: &str, body: &str) -> Result<()> {
 		if let Some(fresh) = crate::auth::token() {
 			response = send(url.into(), &fresh)?;
 		}
-	}
-	// 回退：v24 升级用户本地可能还留着网页会话 token
-	if response.status_code() == 401
-		&& let Some(web) = crate::auth::web_token()
-	{
-		println!("copymanga: api token rejected, trying web session token");
-		response = send(url.into(), &web)?;
 	}
 	if response.status_code() == 401 {
 		return Err(error!(

@@ -19,7 +19,6 @@ const LOGIN_USERNAME_KEY: &str = "login.username";
 const TOKEN_KEY: &str = "auth.token";
 const NICKNAME_KEY: &str = "auth.nickname";
 const JUST_LOGGED_IN_KEY: &str = "auth.justLoggedIn";
-const WEB_TOKEN_KEY: &str = "auth.webToken";
 
 pub fn token() -> Option<String> {
 	defaults_get::<String>(TOKEN_KEY).filter(|t| !t.is_empty())
@@ -35,20 +34,9 @@ pub fn nickname() -> Option<String> {
 	defaults_get::<String>(NICKNAME_KEY)
 }
 
-/// 網頁會話 token：由設置頁 web 登入項（WebView）捕獲的站點 `token` cookie。
-/// 與 API 登入 token 等價時可互換，網頁端點以它為準。
-pub fn set_web_token(token: &str) {
-	defaults_set(WEB_TOKEN_KEY, DefaultValue::String(String::from(token)));
-}
-
-pub fn web_token() -> Option<String> {
-	defaults_get::<String>(WEB_TOKEN_KEY).filter(|t| !t.trim().is_empty())
-}
-
 pub fn clear_auth() {
 	defaults_set(TOKEN_KEY, DefaultValue::Null);
 	defaults_set(NICKNAME_KEY, DefaultValue::Null);
-	defaults_set(WEB_TOKEN_KEY, DefaultValue::Null);
 	// 换号/登出时清收藏状态缓存，避免新账号看到旧账号的按钮状态
 	crate::favorites::clear_all_state();
 }
@@ -137,19 +125,13 @@ pub fn try_relogin() -> bool {
 	login(&username, &password).is_ok()
 }
 
-/// 认证 token 取值：单登录设计下 API 登录 token 为主（可静默续期），
-/// 网页会话 token 仅作升级用户的回退。
-pub fn best_token() -> Option<String> {
-	token().or_else(web_token)
-}
-
 pub trait AuthedRequest {
 	fn authed(self) -> Result<Request>;
 }
 
 impl AuthedRequest for Request {
 	fn authed(self) -> Result<Request> {
-		let token = best_token().ok_or_else(|| error!("請先在設置中登錄"))?;
+		let token = token().ok_or_else(|| error!("請先在設置中登錄"))?;
 		Ok(self.header("Authorization", &format!("Token {token}")))
 	}
 }

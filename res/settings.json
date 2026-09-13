@@ -34,55 +34,6 @@
 	},
 	{
 		"type": "group",
-		"title": "收藏操作",
-		"footer": "先在上方登入，再輸入漫畫鏈接或 ID。操作結果會顯示在輸入框；「網頁收藏」使用獨立網頁登入。",
-		"items": [
-			{
-				"type": "text",
-				"key": "favInput",
-				"title": "漫畫鏈接或 ID",
-				"placeholder": "例如 /comic/xxxx"
-			},
-			{
-				"type": "button",
-				"key": "favAdd",
-				"title": "加入書架",
-				"notification": "favAdd",
-				"refreshes": [
-					"listings",
-					"content"
-				]
-			},
-			{
-				"type": "button",
-				"key": "favRemove",
-				"title": "取消收藏",
-				"notification": "favRemove",
-				"destructive": true,
-				"confirmTitle": "確認要從網站書架移除該漫畫嗎？",
-				"refreshes": [
-					"listings",
-					"content"
-				]
-			},
-			{
-				"type": "login",
-				"key": "websession",
-				"title": "網頁收藏（App 內網頁）",
-				"logoutTitle": "重新打開網頁收藏",
-				"method": "web",
-				"url": "https://www.copy3000.com/web/login?url=person/home",
-				"clearCookiesOnLogOut": false,
-				"notification": "websession",
-				"refreshes": [
-					"listings",
-					"content"
-				]
-			}
-		]
-	},
-	{
-		"type": "group",
 		"title": "圖片",
 		"items": [
 			{
