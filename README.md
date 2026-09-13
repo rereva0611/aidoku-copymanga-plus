@@ -1,16 +1,32 @@
 # 拷貝漫畫 Plus
 
-这是一个非官方的 [Aidoku](https://aidoku.app/) CopyManga 图源，提供账户登录和网站收藏功能。项目与 Aidoku、CopyManga 均无关联。
+适用于 [Aidoku](https://aidoku.app/) 的 CopyManga 增强图源。在保留搜索和阅读功能的基础上，增加了账号收藏功能。
 
-## 项目状态
+## 主要功能
 
-这是独立维护的发布线，Source ID 为 `zh.copymanga.plus`。在账户收藏功能完成验证期间，它与社区原版图源分开发布。
+- 无需登录即可搜索和阅读漫画
+- 登录 CopyManga 账号
+- 查看免费和付费收藏
+- 在漫画详情页加入或取消收藏
+- 登录状态过期后自动恢复
+- 支持地区、状态和排序筛选
 
-本地的 `package.aix` 只是构建产物，不应直接作为正式发布依据。请从当前源码重新打包并验证后再分发。
+## 安装
 
-## 开发与验证
+发布后，请从本仓库的 Releases 页面下载最新 `package.aix`，并导入 Aidoku。
 
-需要安装 Rust、`wasm32-unknown-unknown` 编译目标和 Aidoku CLI。
+## 使用
+
+阅读漫画不需要登录。使用收藏功能时，请先在图源设置中登录，然后在漫画详情页加入或取消收藏。“我的收藏”可以从首页或 Explore 页面打开。
+
+## 说明
+
+这是非官方项目，与 Aidoku、CopyManga 均无关联。Plus 版拥有独立的 Source ID，可以与社区原版分别安装。
+
+<details>
+<summary>开发与验证</summary>
+
+开发环境需要 Rust、`wasm32-unknown-unknown` 编译目标和 Aidoku CLI。
 
 ```sh
 cargo fmt --check
@@ -20,12 +36,10 @@ aidoku package
 aidoku verify package.aix
 ```
 
-公开发布前，应在 Aidoku 设备上验证匿名阅读、登录/登出/重新登录、收藏读取与写入、token 过期续期和详情页 deep link。
+若未来向 Aidoku Community 贡献代码，应基于社区现有的 CopyManga 图源并保留其原有 Source ID。
 
-## 向 Aidoku Community 贡献
-
-若未来向 Aidoku Community 提交改动，应基于社区现有的 CopyManga 图源，并保留其原有 Source ID；不要将独立的 `zh.copymanga.plus` 作为平行重复图源提交。请使用聚焦的 Pull Request、Conventional Commit 标题，并附上真机测试结果。
+</details>
 
 ## 许可证
 
-本项目使用 [MIT 许可证](LICENSE-MIT)。原 Aidoku Community 图源采用双许可证；未来向社区提交的代码仍受社区仓库贡献条款约束。
+本项目使用 [MIT 许可证](LICENSE-MIT)。
